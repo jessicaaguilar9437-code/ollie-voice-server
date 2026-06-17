@@ -2,7 +2,6 @@
 import asyncio
 import io
 import os
-import xml.sax.saxutils as saxutils
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 import edge_tts
@@ -12,18 +11,7 @@ PORT  = int(os.environ.get("PORT", 5050))
 
 
 async def _generate(text: str) -> bytes:
-    escaped = saxutils.escape(text)
-    ssml = (
-        '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" '
-        'xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">'
-        '<voice name="en-US-AriaNeural">'
-        '<mstts:express-as style="cheerful" styledegree="1.5">'
-        f'<prosody rate="+15%" pitch="+5%">{escaped}</prosody>'
-        '</mstts:express-as>'
-        '</voice>'
-        '</speak>'
-    )
-    communicate = edge_tts.Communicate(ssml, voice=VOICE)
+    communicate = edge_tts.Communicate(text, voice=VOICE, rate="+15%", pitch="+5%")
     buf = io.BytesIO()
     async for chunk in communicate.stream():
         if chunk["type"] == "audio":
