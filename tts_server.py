@@ -11,7 +11,7 @@ PORT  = int(os.environ.get("PORT", 5050))
 
 
 async def _generate(text: str) -> bytes:
-    communicate = edge_tts.Communicate(text, voice=VOICE, rate="+15%", pitch="+5%")
+    communicate = edge_tts.Communicate(text, voice=VOICE)
     buf = io.BytesIO()
     async for chunk in communicate.stream():
         if chunk["type"] == "audio":
